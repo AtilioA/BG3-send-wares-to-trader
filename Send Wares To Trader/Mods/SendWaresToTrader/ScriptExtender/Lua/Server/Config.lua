@@ -8,7 +8,8 @@ Config.defaultConfig = {
         enabled = true, -- Toggle the mod on/off
     },
     FEATURES = {
-        send_back_if_not_sold = true -- Send back the wares to their original character if they are not sold
+        send_back_if_not_sold = true, -- Send back the wares to their original character if they are not sold
+        show_notification = false -- Show item notification when the mod sends wares to the trader
     },
     DEBUG = {
         level = 0 -- 0 = no debug, 1 = minimal, 2 = verbose logs

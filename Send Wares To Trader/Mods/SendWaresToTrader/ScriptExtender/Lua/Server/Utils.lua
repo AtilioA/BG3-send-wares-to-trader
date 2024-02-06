@@ -20,7 +20,7 @@ end
 ---@return string
 function Utils.GetUID(templateuuid)
   if #templateuuid <= 36 then
-    return templateuuid   -- Return the original string if it's too short
+    return templateuuid -- Return the original string if it's too short
   end
 
   local result = string.sub(templateuuid, 1, -37) -- Remove last 36 characters
@@ -35,6 +35,19 @@ function Utils.GetPartyMembers()
   local teamMembers = {}
 
   local allPlayers = Osi.DB_Players:Get(nil)
+  for _, player in ipairs(allPlayers) do
+    if not string.match(player[1]:lower(), "%f[%A]dummy%f[%A]") then
+      teamMembers[#teamMembers + 1] = Utils.GetGUID(player[1])
+    end
+  end
+
+  return teamMembers
+end
+
+function Utils.GetAllCampMembers()
+  local teamMembers = {}
+
+  local allPlayers = Osi.DB_PartOfTheTeam:Get(nil)
   for _, player in ipairs(allPlayers) do
     if not string.match(player[1]:lower(), "%f[%A]dummy%f[%A]") then
       teamMembers[#teamMembers + 1] = Utils.GetGUID(player[1])
