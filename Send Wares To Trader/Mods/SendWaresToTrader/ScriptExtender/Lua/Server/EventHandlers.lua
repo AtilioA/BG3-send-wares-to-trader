@@ -28,4 +28,24 @@ function EHandlers.OnMovedFromTo(movedObject, fromObject, toObject, isTrade)
   --   return
 end
 
+function EHandlers.OnTradeEnds(trader, character)
+  Utils.DebugPrint(0, "OnTradeEnds called: " .. trader .. " and " .. character)
+  -- if Osi.IsInPartyWith(trader, Osi.GetHostCharacter()) == 1 then
+  --   if JsonConfig.FEATURES.send_back_if_not_sold then
+  --     WareDelivery.SendBackUnsoldWares(trader)
+  --   end
+  -- end
+end
+
+function EHandlers.RequestTrade(trader, character, itemsTagFilter, tradeMode)
+  if Osi.IsInPartyWith(trader, Osi.GetHostCharacter()) == 1 then
+    Utils.DebugPrint(0,
+      "RequestTrade called: " ..
+      trader .. " and " .. character .. " with itemsTagFilter " .. itemsTagFilter .. " and tradeMode " .. tradeMode)
+
+    -- Send ware from party members to trader
+    WareDelivery.SendPartyWaresToCharacter(trader)
+  end
+end
+
 return EHandlers

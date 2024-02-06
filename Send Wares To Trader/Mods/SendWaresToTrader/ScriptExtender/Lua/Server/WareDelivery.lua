@@ -58,4 +58,29 @@ WareDelivery = {}
 --   end
 -- end
 
+function WareDelivery.DeliverWare(item, partyMember, character)
+  Utils.DebugPrint(2, "Found ware in " .. partyMember .. "'s inventory: ")
+  _D(item)
+  Utils.DebugPrint(2, "Delivering ware to " .. character .. " from " .. partyMember)
+
+  local itemObject = item.TemplateName .. item.Guid
+  local exactamount, totalamount = Osi.GetStackAmount(itemObject)
+  Osi.ToInventory(itemObject, character, totalamount, 1, 1)
+end
+
+function WareDelivery.SendPartyWaresToCharacter(character)
+  local partyMembers = Utils.GetPartyMembers()
+
+  for _, partyMember in ipairs(partyMembers) do
+    if partyMember ~= character then
+      local ware = GetWaresInInventory(GetInventory(partyMember, true, false))
+      if ware ~= nil then
+        for _, item in ipairs(ware) do
+          WareDelivery.DeliverWare(item, partyMember, character)
+        end
+      end
+    end
+  end
+end
+
 return WareDelivery
