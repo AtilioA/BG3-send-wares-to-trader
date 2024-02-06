@@ -163,3 +163,17 @@ function GetInventory(object, primaryOnly, shallow)
   table.sort(items, function(a, b) return a.Name < b.Name end)
   return items
 end
+
+--- Returns all the wares in an object's inventory
+---@param inventoryItems any The first
+---@return table - The wares in the inventory
+function GetWaresInInventory(inventoryItems)
+  local wares = {}
+  for _, item in ipairs(inventoryItems) do
+    if Ware.IsWare(item.Entity) then
+      table.insert(wares, item)
+    end
+  end
+
+  return wares
+end
