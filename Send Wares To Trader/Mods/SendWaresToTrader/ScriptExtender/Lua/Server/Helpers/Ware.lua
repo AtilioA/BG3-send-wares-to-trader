@@ -1,7 +1,6 @@
 Ware = {}
 
-function IsWare(object)
-  local objectEntity = Ext.Entity.Get(object)
+function Ware.IsWare(objectEntity)
   if objectEntity ~= nil then
     return objectEntity.ServerItem and objectEntity.ServerItem.DontAddToHotbar == true
   end

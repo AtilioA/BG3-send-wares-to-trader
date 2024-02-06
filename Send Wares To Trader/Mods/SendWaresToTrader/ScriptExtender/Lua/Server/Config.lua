@@ -1,7 +1,7 @@
 Config = {}
 
 FolderName = "SendWaresToTrader"
-Config.configFilePath = "send_wares_to_trader.json"
+Config.configFilePath = "send_wares_to_trader_config.json"
 
 Config.defaultConfig = {
     GENERAL = {
