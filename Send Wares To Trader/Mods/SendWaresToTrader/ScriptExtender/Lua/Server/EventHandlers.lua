@@ -18,8 +18,11 @@ function EHandlers.OnMovedFromTo(movedObject, fromObject, toObject, isTrade)
 
   -- Don't try to move items that are being moved from the party
   if (Osi.IsInPartyWith(fromObject, Osi.GetHostCharacter()) and isTrade == 1) then
-    Utils.DebugPrint(2, "Item is from the party and was sold, updating WareDelivery.delivered_wares")
-    WareDelivery.delivered_wares[movedObject].sold = true
+    if (WareDelivery.delivered_wares[movedObject]) then
+      Utils.DebugPrint(2, "Item is from the party and was sold, updating WareDelivery.delivered_wares")
+      -- If it's not present, it means it was from the trader's inventory already
+      WareDelivery.delivered_wares[movedObject].sold = true
+    end
   end
 end
 

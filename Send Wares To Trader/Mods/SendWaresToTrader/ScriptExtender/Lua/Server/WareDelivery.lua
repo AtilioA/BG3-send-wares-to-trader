@@ -4,14 +4,14 @@ WareDelivery = {}
 WareDelivery.delivered_wares = {}
 
 function WareDelivery.RegisterDeliveredWare(item, partyMember, character)
-  local itemObject = item.TemplateName .. item.Guid
+  local itemObject = item.TemplateName .. "_" .. item.Guid
   WareDelivery.delivered_wares[itemObject] = { ["from"] = partyMember, ["to"] = character, sold = false }
 end
 
 -- Iterate WareDelivery.delivered_wares and send back the items that were not sold to 'from' character
 function WareDelivery.ReturnUnsoldWares(trader)
   for itemObject, ware in pairs(WareDelivery.delivered_wares) do
-    if ware.sold == false and ware.to == trader then -- and ware.from ~= ware.to then
+    if ware and ware.sold == false and ware.to == trader then -- and ware.from ~= ware.to then
       local from = ware.from
       local exactamount, totalamount = Osi.GetStackAmount(itemObject)
       if Osi.IsInPartyWith(trader, ware.from) == 1 then
@@ -58,8 +58,8 @@ function WareDelivery.SendPartyWaresToCharacter(character)
       if ware ~= nil then
         for _, item in ipairs(ware) do
           Utils.DebugPrint(2, "Found ware in " .. partyMemberUUID .. "'s inventory: ")
-          WareDelivery.DeliverWare(item, partyMemberUUID, character)
           WareDelivery.RegisterDeliveredWare(item, partyMemberUUID, character)
+          WareDelivery.DeliverWare(item, partyMemberUUID, character)
         end
       end
     end
