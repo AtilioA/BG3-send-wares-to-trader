@@ -17,6 +17,7 @@ function WareDelivery.ReturnUnsoldWares(trader)
       if Osi.IsInPartyWith(trader, ware.from) == 1 then
         Utils.DebugPrint(1, "Returning unsold ware to " .. from .. " from " .. trader)
         Osi.ToInventory(itemObject, from, totalamount, 0, 1)
+        Ware.MarkAsWare(itemObject)
       else
         Utils.DebugPrint(1,
           "Not returning ware to " ..
@@ -50,16 +51,20 @@ function WareDelivery.SendPartyWaresToCharacter(character)
 
   for _, partyMember in ipairs(partyMembers) do
     local partyMemberEntity = Ext.Entity.Get(partyMember)
-    local partyMemberUUID = partyMemberEntity.ServerCharacter.Template.Name .. "_" .. partyMemberEntity.Uuid.EntityUuid
-    Utils.DebugPrint(2,
-      "Checking " .. partyMemberUUID .. " for wares to send to " .. character .. tostring(partyMemberUUID == character))
-    if partyMemberUUID ~= character then
-      local ware = GetWaresInInventory(GetInventory(partyMember, true, false))
-      if ware ~= nil then
-        for _, item in ipairs(ware) do
-          Utils.DebugPrint(2, "Found ware in " .. partyMemberUUID .. "'s inventory: ")
-          WareDelivery.RegisterDeliveredWare(item, partyMemberUUID, character)
-          WareDelivery.DeliverWare(item, partyMemberUUID, character)
+    -- This check is insane and might not be necessary
+    if partyMemberEntity and partyMemberEntity.ServerCharacter and partyMemberEntity.ServerCharacter.Template and partyMemberEntity.ServerCharacter.Template.Name and partyMemberEntity.Uuid and partyMemberEntity.Uuid.EntityUuid then
+      local partyMemberUUID = partyMemberEntity.ServerCharacter.Template.Name .. "_" .. partyMemberEntity.Uuid
+      .EntityUuid
+      Utils.DebugPrint(2,
+        "Checking " .. partyMemberUUID .. " for wares to send to " .. character .. tostring(partyMemberUUID == character))
+      if partyMemberUUID ~= character then
+        local ware = GetWaresInInventory(GetInventory(partyMember, true, false))
+        if ware ~= nil then
+          for _, item in ipairs(ware) do
+            Utils.DebugPrint(2, "Found ware in " .. partyMemberUUID .. "'s inventory: ")
+            WareDelivery.RegisterDeliveredWare(item, partyMemberUUID, character)
+            WareDelivery.DeliverWare(item, partyMemberUUID, character)
+          end
         end
       end
     end

@@ -8,4 +8,12 @@ function Ware.IsWare(objectEntity)
   return false
 end
 
+function Ware.MarkAsWare(item)
+  if type(item) == "string" then
+    Ext.Entity.Get(item).ServerItem.DontAddToHotbar = true
+  elseif type(item) == "userdata" then
+    item.ServerItem.DontAddToHotbar = true
+  end
+end
+
 return Ware
