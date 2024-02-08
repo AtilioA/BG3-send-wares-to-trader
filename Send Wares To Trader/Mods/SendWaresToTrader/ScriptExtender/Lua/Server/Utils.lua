@@ -61,4 +61,11 @@ function Utils.GetPlayerEntity()
   return Ext.Entity.Get(Osi.GetHostCharacter())
 end
 
+function Utils.DumpObjectEntity(object, id)
+  if JsonConfig.DEBUG.level >= 2 then
+    local charEntity = Ext.Entity.Get(object)
+    Ext.IO.SaveFile('object-entity-SWTT' .. id .. '.json', Ext.DumpExport(charEntity:GetAllComponents()))
+  end
+end
+
 return Utils

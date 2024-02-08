@@ -13,9 +13,10 @@ function WareDelivery.ReturnUnsoldWares(trader)
   for itemObject, ware in pairs(WareDelivery.delivered_wares) do
     if ware and ware.sold == false and ware.to == trader then -- and ware.from ~= ware.to then
       local from = ware.from
-      local exactamount, totalamount = Osi.GetStackAmount(itemObject)
-      if Osi.IsInPartyWith(trader, ware.from) == 1 then
+      if Osi.IsInPartyWith(trader, from) == 1 then
+        local exactamount, totalamount = Osi.GetStackAmount(itemObject)
         Utils.DebugPrint(1, "Returning unsold ware to " .. from .. " from " .. trader)
+        -- Utils.DumpObjectEntity(itemObject, "Returned ware")
         Osi.ToInventory(itemObject, from, totalamount, 0, 1)
         Ware.MarkAsWare(itemObject)
       else
@@ -41,9 +42,9 @@ function WareDelivery.DeliverWare(item, partyMember, character)
 
   Utils.DebugPrint(2, "Found ware in " .. partyMember .. "'s inventory: " .. item.Name)
 
-  local itemObject = item.TemplateName .. item.Guid
+  local itemObject = item.TemplateName .. "_" .. item.Guid
   local exactamount, totalamount = Osi.GetStackAmount(itemObject)
-  Osi.ToInventory(itemObject, character, totalamount, showNotification, 1)
+  Osi.ToInventory(itemObject, character, totalamount, showNotification, 0)
 end
 
 function WareDelivery.SendPartyWaresToCharacter(character)
@@ -54,7 +55,7 @@ function WareDelivery.SendPartyWaresToCharacter(character)
     -- This check is insane and might not be necessary
     if partyMemberEntity and partyMemberEntity.ServerCharacter and partyMemberEntity.ServerCharacter.Template and partyMemberEntity.ServerCharacter.Template.Name and partyMemberEntity.Uuid and partyMemberEntity.Uuid.EntityUuid then
       local partyMemberUUID = partyMemberEntity.ServerCharacter.Template.Name .. "_" .. partyMemberEntity.Uuid
-      .EntityUuid
+          .EntityUuid
       Utils.DebugPrint(2,
         "Checking " .. partyMemberUUID .. " for wares to send to " .. character .. tostring(partyMemberUUID == character))
       if partyMemberUUID ~= character then
@@ -64,6 +65,7 @@ function WareDelivery.SendPartyWaresToCharacter(character)
             Utils.DebugPrint(2, "Found ware in " .. partyMemberUUID .. "'s inventory: ")
             WareDelivery.RegisterDeliveredWare(item, partyMemberUUID, character)
             WareDelivery.DeliverWare(item, partyMemberUUID, character)
+            -- Utils.DumpObjectEntity(item.TemplateName .. '_' .. item.Guid, "Sent ware")
           end
         end
       end
