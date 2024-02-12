@@ -6,8 +6,7 @@ WareDelivery.delivered_wares = {}
 function WareDelivery.RegisterWareToDeliver(item, partyMember, character)
   -- WIP: use item.Guid as key to allow stacked items
   local itemObject = item.TemplateName .. "_" .. item.Guid
-  local exactamount, totalamount = Osi.GetStackAmount(itemObject)
-  WareDelivery.delivered_wares[itemObject] = { ["from"] = partyMember, ["to"] = character, amount = totalamount, sold = false }
+  WareDelivery.delivered_wares[itemObject] = { ["from"] = partyMember, ["to"] = character, sold = false }
 end
 
 -- Iterate WareDelivery.delivered_wares and send back the items that were not sold to 'from' character
@@ -18,10 +17,11 @@ function WareDelivery.ReturnUnsoldWares(trader)
       if Osi.IsInPartyWith(trader, from) == 1 then
         -- _D(itemObject)
         Utils.DebugPrint(1,
-          "Returning " .. ware.amount .. " unsold ware to " .. from .. " from " .. trader)
-        Osi.ToInventory(itemObject, from, 2, 1, 0)
+          "Returning " .. 1 .. " unsold ware to " .. from .. " from " .. trader)
+        Osi.ToInventory(itemObject, from, 1, 1, 0)
         -- Failing for some reason, I can't think about it right now
-        -- Ware.MarkAsWare(itemObject)
+        Utils.DebugPrint(2, "Marking " .. itemObject .. " as ware")
+        Ware.MarkAsWare(itemObject)
       else
         Utils.DebugPrint(1,
           "Not returning ware to " ..
@@ -46,8 +46,8 @@ function WareDelivery.DeliverWare(item, partyMember, character)
   Utils.DebugPrint(2, "Found ware in " .. partyMember .. "'s inventory: " .. item.Name)
 
   local itemObject = item.TemplateName .. item.Guid
-  local exactamount, totalamount = Osi.GetStackAmount(itemObject)
-  Osi.ToInventory(itemObject, character, totalamount, showNotification, 0)
+  -- REVIEW: I think we don't need to calculate the amount because item.TemplateName .. item.Guid is unique (as in, each item in a stack has a different Guid)
+  Osi.ToInventory(itemObject, character, 1, showNotification, 0)
 end
 
 function WareDelivery.SendPartyWaresToCharacter(character)
