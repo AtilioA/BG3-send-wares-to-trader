@@ -3,8 +3,12 @@ WareDelivery = {}
 -- Keep track of original inventory for each delivered ware
 WareDelivery.delivered_wares = {}
 
+function WareDelivery.ResetDeliveredWare()
+  WareDelivery.delivered_wares = {}
+end
+
 function WareDelivery.RegisterWareToDeliver(item, partyMember, character)
-  local itemObject = item.TemplateName .. "_" .. item.Guid
+  local itemObject = item.TemplateName .. item.Guid
   -- We don't need to keep track of the amount, since every itemObject is unique/individual
   WareDelivery.delivered_wares[itemObject] = { ["from"] = partyMember, ["to"] = character, sold = false }
 end
@@ -41,9 +45,18 @@ function WareDelivery.ReturnUnsoldWares(trader)
     if ware and ware.sold == false and ware.to == trader then -- and ware.from ~= ware.to then
       local from = ware.from
       if Osi.IsInPartyWith(trader, from) == 1 then
+        local exactamount, totalamount = Osi.GetStackAmount(itemObject)
+        if totalamount == nil then
+          if exactamount == nil then
+            totalamount = 1
+          else
+            totalamount = exactamount
+          end
+        end
         Utils.DebugPrint(1,
-          "Returning " .. 1 .. " unsold ware to " .. from .. " from " .. trader)
-        Osi.ToInventory(itemObject, from, 1, 1, 0)
+          "Returning " .. totalamount .. " unsold ware to " .. from .. " from " .. trader)
+        Osi.ToInventory(itemObject, from, totalamount, 0, 1)
+
         -- Failing for some reason, I can't think about it right now
         Utils.DebugPrint(2, "Marking " .. itemObject .. " as ware")
         Ware.MarkAsWare(itemObject)
@@ -55,7 +68,8 @@ function WareDelivery.ReturnUnsoldWares(trader)
       WareDelivery.delivered_wares[itemObject] = nil
     end
   end
-  WareDelivery.delivered_wares = {}
+
+  WareDelivery.ResetDeliveredWare()
 end
 
 function WareDelivery.DeliverWare(item, partyMember, character)
@@ -72,7 +86,8 @@ function WareDelivery.DeliverWare(item, partyMember, character)
 
   local itemObject = item.TemplateName .. item.Guid
   -- REVIEW: I think we don't need to calculate the amount because item.TemplateName .. item.Guid is unique (as in, each item in a stack has a different Guid)
-  Osi.ToInventory(itemObject, character, 1, showNotification, 0)
+  local exactamount, totalamount = Osi.GetStackAmount(itemObject)
+  Osi.ToInventory(itemObject, character, totalamount, showNotification, 0)
 end
 
 return WareDelivery

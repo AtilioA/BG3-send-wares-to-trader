@@ -11,10 +11,15 @@ end
 function Ware.MarkAsWare(item)
   if type(item) == "string" then
     Utils.DebugPrint(3, "Marking " .. item .. " as ware")
-    Ext.Entity.Get(item).ServerItem.DontAddToHotbar = true
+    local itemEntity = Ext.Entity.Get(item)
+    if itemEntity and itemEntity.ServerItem then
+      itemEntity.ServerItem.DontAddToHotbar = true
+    end
   elseif type(item) == "userdata" then
     Utils.DebugPrint(3, "Marking item entity as ware")
-    item.ServerItem.DontAddToHotbar = true
+    if item.ServerItem then
+      item.ServerItem.DontAddToHotbar = true
+    end
   end
 end
 

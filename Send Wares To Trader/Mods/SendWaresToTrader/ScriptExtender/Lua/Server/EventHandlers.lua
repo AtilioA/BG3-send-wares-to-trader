@@ -32,6 +32,8 @@ function EHandlers.OnTradeEnds(trader, character)
     EHandlers.trader = nil
     if JsonConfig.FEATURES.send_back_if_not_sold then
       WareDelivery.ReturnUnsoldWares(trader)
+      -- Redundant, but just in case
+      WareDelivery.ResetDeliveredWare()
     end
   end
 end
