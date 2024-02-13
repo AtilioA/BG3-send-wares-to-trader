@@ -4,10 +4,9 @@ WareDelivery = {}
 WareDelivery.delivered_wares = {}
 
 function WareDelivery.RegisterWareToDeliver(item, partyMember, character)
-  -- WIP: use item.Guid as key to allow stacked items
   local itemObject = item.TemplateName .. "_" .. item.Guid
-  local exactamount, totalamount = Osi.GetStackAmount(itemObject)
-  WareDelivery.delivered_wares[itemObject] = { ["from"] = partyMember, ["to"] = character, amount = totalamount, sold = false }
+  -- We don't need to keep track of the amount, since every itemObject is unique/individual
+  WareDelivery.delivered_wares[itemObject] = { ["from"] = partyMember, ["to"] = character, sold = false }
 end
 
 -- Iterate WareDelivery.delivered_wares and send back the items that were not sold to 'from' character
@@ -16,12 +15,11 @@ function WareDelivery.ReturnUnsoldWares(trader)
     if ware and ware.sold == false and ware.to == trader then -- and ware.from ~= ware.to then
       local from = ware.from
       if Osi.IsInPartyWith(trader, from) == 1 then
-        -- _D(itemObject)
         Utils.DebugPrint(1,
           "Returning " .. ware.amount .. " unsold ware to " .. from .. " from " .. trader)
-        Osi.ToInventory(itemObject, from, 2, 1, 0)
+        Osi.ToInventory(itemObject, from, 1, 1, 0)
         -- Failing for some reason, I can't think about it right now
-        -- Ware.MarkAsWare(itemObject)
+        Ware.MarkAsWare(itemObject)
       else
         Utils.DebugPrint(1,
           "Not returning ware to " ..
